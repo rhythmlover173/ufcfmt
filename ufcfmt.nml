@@ -1,0 +1,78 @@
+grf 
+{
+    grfid: "LRG\00";
+    name: string(STR_GRF_NAME);
+    desc: string(STR_GRF_DESC);
+    version: 0;
+    min_compatible_version: 0;
+}
+
+railtypetable {
+    ELRL
+}
+
+template tmpl_epc(x, y) //view, starting from top left image (facing northwest)
+{
+    [x, y,      7, 25, -1,  -13, CROP]
+    [x, y+30,  26, 20,  -11, -12, CROP]
+    [x, y+60,  28, 13,  -9,  -9, CROP]
+    [x, y+90,  26, 20,  -5, -10, CROP]
+    [x, y+120,  7, 25,  -1, -13, CROP]
+    [x, y+150, 26, 20, -13, -13, CROP]
+    [x, y+180, 28, 13,  -9,  -9, CROP]
+    [x, y+210, 25, 20,  -5, -10, CROP]
+}//271024 1931
+
+template tmpl_epc_single(viewno) {
+    [0, 60, 28, 13, -20, -6, CROP]
+    [0, 180, 28, 13, -20, -6, CROP]
+}
+
+
+spriteset (epc_front,         "UFCFMT.png") { tmpl_epc(0, 0) }
+spriteset (epc_purchase,      "UFCFMT.png") { tmpl_epc_single(6) }
+
+
+item(FEAT_TRAINS, EPC)
+{
+    property
+    {
+        name: string(STR_NAME_VEHICLE_EPC);
+        climates_available: ALL_CLIMATES;
+        introduction_date: date(2024,10,24);
+        model_life: (VEHICLE_NEVER_EXPIRES);
+        vehicle_life: 45;
+        reliability_decay: 0;
+        refittable_cargo_classes: ALL_CARGO_CLASSES;
+        loading_speed: 255;
+        cost_factor: 4;
+        running_cost_factor: 255;
+        sprite_id: SPRITE_ID_NEW_TRAIN;
+        speed: 193 km/h;
+        misc_flags: bitmask(TRAIN_FLAG_MU, TRAIN_FLAG_2CC);
+        refit_cost: 4;
+        power: 2000 hp;
+        running_cost_base: RUNNING_COST_ELECTRIC;
+        cargo_capacity: 255;
+        weight: 30;
+        engine_class: ENGINE_CLASS_ELECTRIC;
+        tractive_effort_coefficient: 0.85;
+        air_drag_coefficient: 0.15;
+        length: 8;
+        extra_weight_per_wagon: 20;
+        curve_speed_mod: 0.8;
+        dual_headed: 1;
+        visual_effect_and_powered: visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 2, ENABLE_WAGON_POWER);
+    }
+    graphics 
+    {
+        default: epc_front;
+        purchase: epc_purchase;
+        additional_text: return string(STR_EPC_ADD_TEXT);
+        visual_effect_and_powered: return visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 2, ENABLE_WAGON_POWER);
+        length: return 8;
+    }
+
+    
+}
+
