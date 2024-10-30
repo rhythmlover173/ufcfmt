@@ -3,7 +3,7 @@ grf
     grfid: "LRG\00";
     name: string(STR_GRF_NAME);
     desc: string(STR_GRF_DESC);
-    version: 0;
+    version: 1;
     min_compatible_version: 0;
 }
 
@@ -51,7 +51,7 @@ item(FEAT_TRAINS, EPC)
         speed: 193 km/h;
         misc_flags: bitmask(TRAIN_FLAG_MU, TRAIN_FLAG_2CC);
         refit_cost: 4;
-        power: 2000 hp;
+        power: 2200 hp;
         running_cost_base: RUNNING_COST_ELECTRIC;
         cargo_capacity: 255;
         weight: 30;
