@@ -3,63 +3,89 @@ grf
     grfid: "LRG\00";
     name: string(STR_GRF_NAME);
     desc: string(STR_GRF_DESC);
-    version: 1;
+    version: 4;
     min_compatible_version: 0;
 }
 
 railtypetable {
-    ELRL
+    ELRL,
 }
+
 
 template tmpl_epc(x, y) //view, starting from top left image (facing northwest)
 {
-    [x, y,      7, 25, -1,  -13, CROP]
-    [x, y+30,  26, 20,  -11, -12, CROP]
-    [x, y+60,  28, 13,  -9,  -9, CROP]
-    [x, y+90,  26, 20,  -5, -10, CROP]
-    [x, y+120,  7, 25,  -1, -13, CROP]
-    [x, y+150, 26, 20, -13, -13, CROP]
-    [x, y+180, 28, 13,  -9,  -9, CROP]
-    [x, y+210, 25, 20,  -5, -10, CROP]
-}//271024 1931
+    [x, y,      7, 25,  -2, -17, CROP]
+    [x, y+30,  28, 20, -15,  -10, CROP]  // 45
+    [x, y+60,  28, 13, -15,  -9, CROP] // minus by 4, along with 270 deg for EPC and MC
+    [x, y+90,  28, 20,  -8, -12, CROP]  // 135
+    [x, y+120,  7, 25,  -2, -18, CROP]
+    [x, y+150, 28, 20, -17, -11, CROP]  // 225
+    [x, y+180, 28, 13,  -12,  -9, CROP]
+    [x, y+210, 28, 20,  -8, -12, CROP]  // 315
+}//171125 1248
 
-template tmpl_epc_single(viewno) {
-    [0, 60, 28, 13, -20, -6, CROP]
-    [0, 180, 28, 13, -20, -6, CROP]
+template tmpl_mc(x, y)
+{
+    [x, y,      7, 25,  -2, -13, CROP]
+    [x, y+30,  28, 20,  -8, -14, CROP] // 45
+    [x, y+60,  28, 13,  -3,  -9, CROP]
+    [x, y+90,  28, 20,   0, -12, CROP] // 135
+    [x, y+120,  7, 25,  -2, -13, CROP]
+    [x, y+150, 28, 20, -15, -10, CROP] // 225
+    [x, y+180, 28, 13, -15,  -9, CROP]
+    [x, y+210, 28, 20,  -5, -14, CROP] // 315
+}//171125 1248
+
+
+
+template tmpl_epc_single(x, x_offset) { //changed alignment
+    [x, 60, 28, 13, -11+x_offset, -7, CROP]
 }
+//purchase: -15 -7, -12 -7, -12 -7
 
 
-spriteset (epc_front,         "UFCFMT.png") { tmpl_epc(0, 0) }
-spriteset (epc_purchase,      "UFCFMT.png") { tmpl_epc_single(6) }
+spriteset (epc_front,         "ufcfmt4.png") { tmpl_epc(0, 0) }
+spriteset (epc_purchase,      "ufcfmt4.png") { tmpl_epc_single(0, -7) }
 
+spriteset (mtc,               "ufcfmt4.png") { tmpl_mc(92, 0) } 
+spriteset (mtc_purchase,      "ufcfmt4.png") { tmpl_epc_single(92, 0) }
 
+spriteset (mpc,               "ufcfmt4.png") { tmpl_mc(53, 0) } 
+spriteset (mpc_purchase,      "ufcfmt4.png") { tmpl_epc_single(53, 0) }
+
+spritegroup mpc_spritegroup //this is purely for the powered wagon
+{
+    loaded: mpc;
+    loading: mpc;
+}
 item(FEAT_TRAINS, EPC)
 {
     property
     {
         name: string(STR_NAME_VEHICLE_EPC);
         climates_available: ALL_CLIMATES;
-        introduction_date: date(2024,10,24);
+        introduction_date: date(1980,1,1); //changed from 2024
         model_life: (VEHICLE_NEVER_EXPIRES);
         vehicle_life: 45;
         reliability_decay: 0;
         refittable_cargo_classes: ALL_CARGO_CLASSES;
         loading_speed: 255;
-        cost_factor: 4;
-        running_cost_factor: 255;
+        cost_factor: 35;
         sprite_id: SPRITE_ID_NEW_TRAIN;
         speed: 193 km/h;
-        misc_flags: bitmask(TRAIN_FLAG_MU, TRAIN_FLAG_2CC);
+        misc_flags: bitmask(TRAIN_FLAG_MU, TRAIN_FLAG_2CC, TRAIN_FLAG_TILT);
         refit_cost: 4;
-        power: 2200 hp;
-        running_cost_base: RUNNING_COST_ELECTRIC;
+        track_type: ELRL; //added track_type to both MTC and EPC
+        power: 3850 hp; // increased power from 2200
+        running_cost_base: RUNNING_COST_DIESEL;
+        running_cost_factor: 255; // changed running cost
         cargo_capacity: 255;
         weight: 30;
         engine_class: ENGINE_CLASS_ELECTRIC;
-        tractive_effort_coefficient: 0.85;
-        air_drag_coefficient: 0.15;
+        tractive_effort_coefficient: 0.9;
+        air_drag_coefficient: 0.18;
         length: 8;
-        extra_weight_per_wagon: 20;
+        extra_power_per_wagon: 1600 hp;
         curve_speed_mod: 0.8;
         dual_headed: 1;
         visual_effect_and_powered: visual_effect_and_powered(VISUAL_EFFECT_ELECTRIC, 2, ENABLE_WAGON_POWER);
@@ -73,6 +99,84 @@ item(FEAT_TRAINS, EPC)
         length: return 8;
     }
 
+    livery_override(MPC)
+    {
+        default: mpc_spritegroup;
+    }
+
+
     
 }
 
+item(FEAT_TRAINS, MTC) //added
+{
+    property
+    {
+        name: string(STR_NAME_VEHICLE_MTC);
+        climates_available: ALL_CLIMATES;
+        introduction_date: date(1980,1,1); //changed from 2024
+        model_life: (VEHICLE_NEVER_EXPIRES);
+        vehicle_life: 45; 
+        reliability_decay: 0;
+        refittable_cargo_classes: ALL_CARGO_CLASSES;
+        loading_speed: 255;
+        cost_factor: 200;
+        sprite_id: SPRITE_ID_NEW_TRAIN;
+        speed: 193 km/h;
+        misc_flags: bitmask(TRAIN_FLAG_MU, TRAIN_FLAG_2CC, TRAIN_FLAG_TILT); // cars now tilt
+        refit_cost: 4;
+        track_type: ELRL;
+        engine_class: ENGINE_CLASS_ELECTRIC;
+        running_cost_base: RUNNING_COST_NONE;
+        cargo_capacity: 255;
+        weight: 18;
+        tractive_effort_coefficient: 0;
+        air_drag_coefficient: 0.03;
+        length: 5;
+        curve_speed_mod: 0.8;
+    }
+    graphics 
+    {
+        default: mtc;
+        purchase: mtc_purchase;
+        additional_text: return string(STR_MTC_ADD_TEXT);
+        length: return 5;
+    }
+}
+
+item(FEAT_TRAINS, MPC) //added
+{
+    property
+    {
+        name: string(STR_NAME_VEHICLE_MPC);
+        climates_available: ALL_CLIMATES;
+        introduction_date: date(1980,1,1); //changed from 2024
+        model_life: (VEHICLE_NEVER_EXPIRES);
+        vehicle_life: 45; 
+        reliability_decay: 0;
+        refittable_cargo_classes: ALL_CARGO_CLASSES;
+        loading_speed: 255;
+        cost_factor: 255;
+        sprite_id: SPRITE_ID_NEW_TRAIN;
+        speed: 193 km/h;
+        misc_flags: bitmask(TRAIN_FLAG_MU, TRAIN_FLAG_2CC, TRAIN_FLAG_TILT); // cars now tilt
+        refit_cost: 4;
+        track_type: ELRL;
+        engine_class: ENGINE_CLASS_ELECTRIC;
+        running_cost_base: RUNNING_COST_DIESEL;
+        running_cost_factor: 170;
+        cargo_capacity: 255;
+        weight: 24;
+        tractive_effort_coefficient: 0.5;
+        air_drag_coefficient: 0.03;
+        length: 5;
+        curve_speed_mod: 0.8;
+    }
+    graphics 
+    {
+        default: mpc;
+        purchase: mpc_purchase;
+        additional_text: return string(STR_MPC_ADD_TEXT);
+        length: return 5;
+    }
+}
