@@ -1,0 +1,13 @@
+##grflangid 0x01
+
+# GRF stuff
+STR_GRF_NAME                                                    :{SHORT_TITLE} {VERSION}
+STR_GRF_DESC                                                    :{LONG_TITLE}. It's exactly what you think it is.
+
+# Vehicle Names
+STR_NAME_VEHICLE_EPC                                            :UFCFMT End Power Car Set
+STR_EPC_ADD_TEXT                                                :An End Power Car Set for a UFCF Metro Train.        
+STR_NAME_VEHICLE_MPC                                            :UFCFMT Middle Power Car
+STR_MPC_ADD_TEXT                                                :A Middle Power Car for a UFCF Metro Train. 5/8 the length of an EPC with nearly quadruple the capacity but less power.
+STR_NAME_VEHICLE_MTC                                            :UFCFMT Middle Trailer Car
+STR_MTC_ADD_TEXT                                                :A Middle Trailer Car for a UFCF Metro Train. Like the MPC, but unpowered.
